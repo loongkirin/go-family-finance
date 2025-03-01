@@ -110,8 +110,16 @@ func (l *zerologLogger) GetLogger() interface{} {
 	return l.logger
 }
 
+// func (l *zerologLogger) addFields(event *zerolog.Event, fields ...Fields) {
+// 	for _, f := range fields {
+// 		event.Fields(f)
+// 	}
+// }
+
 func (l *zerologLogger) addFields(event *zerolog.Event, fields ...Fields) {
-	for _, f := range fields {
-		event.Fields(f)
+	for _, field := range fields {
+		for key, value := range field {
+			event.Interface(key, value)
+		}
 	}
 }

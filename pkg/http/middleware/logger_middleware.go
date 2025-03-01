@@ -26,19 +26,19 @@ func Logger(logger pkglogger.Logger) gin.HandlerFunc {
 		c.Next()
 
 		// 记录请求信息
-		duration := time.Since(start)
+		duration := time.Since(start).Microseconds()
 		// ctxLogger := logger.With().Fields(map[string]interface{}{
 		// 	"traceId":   traceId,
 		// 	"requestId": requestId,
 		// }).Logger()
 
-		logger.WithFields(pkglogger.Fields{
+		logger.Info("HTTP Request", pkglogger.Fields{
 			"traceId":   traceId,
 			"requestId": requestId,
 			"method":    c.Request.Method,
 			"path":      c.Request.URL.Path,
 			"status":    c.Writer.Status(),
 			"duration":  duration,
-		}).Info("HTTP Request")
+		})
 	}
 }
