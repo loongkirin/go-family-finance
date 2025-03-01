@@ -1,0 +1,78 @@
+dbconfig:
+  db_type: "postgres"
+  master:
+    host: "127.0.0.1"
+    port: 5432
+    config: "TimeZone=Asia/Shanghai"
+    db_name: "wk_db"
+    user: "wk_user"
+    password: "520@yan"
+    max_idle_connections: 10
+    max_open_connections: 100
+    conn_max_lifetime: "10m"
+  slaves:
+    - host: "127.0.0.1"
+      port: 5432
+      config: "TimeZone=Asia/Shanghai"
+      db_name: "wk_db"
+      user: "wk_user"
+      password: "520@yan"
+      max_idle_connections: 10
+      max_open_connections: 100
+      conn_max_lifetime: "10m"
+    - host: "127.0.0.1"
+      port: 5432
+      config: "TimeZone=Asia/Shanghai"
+      db_name: "wk_db"
+      user: "wk_user"
+      password: "520@yan"
+      max_idle_connections: 10
+      max_open_connections: 100
+      conn_max_lifetime: "10m"
+
+oauthconfig:
+  secret_key: "work_space_auth_oauth_secret_key"
+  access_expires_time: "24h"
+  refresh_expires_time: "168h"
+  issuer: "github.com/jackyuan2022"
+
+redisconfig:
+  master:
+    host: "127.0.0.1"
+    port: 6379
+    password: ""
+    db: 0
+    pool_size: 10
+  slaves:
+    - host: "127.0.0.1"
+      port: 6379
+      password: ""
+      db: 0
+      pool_size: 10
+    - host: "127.0.0.1"
+      port: 6379
+      password: ""
+      db: 0
+      pool_size: 10
+
+serverconfig:
+  port: 8081
+  mode: "debug"
+
+loggerconfig  :
+  logger_type: "zerolog"
+  log_config:
+    level: "debug"
+    file_path: "logs/app.log"
+    max_size: 100
+    max_backups: 10
+    max_age: 30
+
+telemetryconfig:
+  service_name: "go-family-finance"
+  collector_url: "http://localhost:4318/v1/traces"
+  trace_sample: 1.0
+
+captchaconfig:
+  captcha_type: "string"
+  captcha_length: 4
