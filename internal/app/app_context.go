@@ -6,7 +6,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/loongkirin/go-family-finance/pkg/cache/redis"
 	"github.com/loongkirin/go-family-finance/pkg/database"
-	"github.com/loongkirin/go-family-finance/pkg/database/postgres"
+	"github.com/loongkirin/go-family-finance/pkg/database/dbfactory"
 	"github.com/loongkirin/go-family-finance/pkg/logger"
 	"github.com/loongkirin/go-family-finance/pkg/telemetry"
 	"github.com/spf13/viper"
@@ -31,10 +31,10 @@ func InitAppContext() {
 		APP_Concurrency_Controller: &singleflight.Group{},
 	}
 	AppContext.initViper()
-	AppContext.initRedis()
-	AppContext.initDbContext()
 	AppContext.initLogger()
 	AppContext.initTracer()
+	AppContext.initRedis()
+	AppContext.initDbContext()
 }
 
 func (ctx *appContext) initViper() {
@@ -44,7 +44,7 @@ func (ctx *appContext) initViper() {
 	vp.AddConfigPath("./")
 	err := vp.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error when read config file: %s", err))
+		panic(fmt.Errorf("fatal error when read config file: %s", err))
 	}
 
 	vp.WatchConfig()
@@ -58,37 +58,10 @@ func (ctx *appContext) initViper() {
 
 	if err := vp.Unmarshal(&ctx.APP_CONFIG); err != nil {
 		fmt.Println(err)
-		panic(fmt.Errorf("Fatal error when unmarshal config file: %s", err))
+		panic(fmt.Errorf("fatal error when unmarshal config file: %s", err))
 	}
 
 	ctx.APP_VP = vp
-}
-
-func (ctx *appContext) initRedis() {
-	redisCfg := ctx.APP_CONFIG.RedisConfig
-	client, err := redis.NewRedisClient(&redisCfg)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		ctx.APP_REDIS = client
-	}
-}
-
-func (ctx *appContext) initDbContext() {
-	ctx.APP_DbContext = createDbContext(ctx.APP_CONFIG.DbConfig)
-}
-
-func createDbContext(cfg database.DbConfig) database.DbContext {
-	var dbcontext database.DbContext
-	if cfg.DbType == "postgres" {
-		postgresDbCtx, err := postgres.NewPostgresDbContext(&cfg)
-		if err != nil {
-			fmt.Println(err)
-		}
-		dbcontext = postgresDbCtx
-	}
-
-	return dbcontext
 }
 
 func (ctx *appContext) initLogger() {
@@ -106,4 +79,22 @@ func (ctx *appContext) initTracer() {
 	} else {
 		ctx.APP_TRACER = tp.Tracer("go-family-finance")
 	}
+}
+
+func (ctx *appContext) initRedis() {
+	redisCfg := ctx.APP_CONFIG.RedisConfig
+	client, err := redis.NewRedisClient(&redisCfg)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		ctx.APP_REDIS = client
+	}
+}
+
+func (ctx *appContext) initDbContext() {
+	dbContext, err := dbfactory.CreateDbContext(ctx.APP_CONFIG.DbConfig)
+	if err != nil {
+		fmt.Println(err)
+	}
+	ctx.APP_DbContext = dbContext
 }

@@ -4,8 +4,8 @@ dbconfig:
     host: "127.0.0.1"
     port: 5432
     config: "TimeZone=Asia/Shanghai"
-    db_name: "wk_db"
-    user: "wk_user"
+    db_name: "family_finance_db"
+    user: "family_finance_user"
     password: "520@yan"
     max_idle_connections: 10
     max_open_connections: 100
@@ -14,8 +14,8 @@ dbconfig:
     - host: "127.0.0.1"
       port: 5432
       config: "TimeZone=Asia/Shanghai"
-      db_name: "wk_db"
-      user: "wk_user"
+      db_name: "family_finance_db"
+      user: "family_finance_user"
       password: "520@yan"
       max_idle_connections: 10
       max_open_connections: 100
@@ -23,18 +23,18 @@ dbconfig:
     - host: "127.0.0.1"
       port: 5432
       config: "TimeZone=Asia/Shanghai"
-      db_name: "wk_db"
-      user: "wk_user"
+      db_name: "family_finance_db"
+      user: "family_finance_user"
       password: "520@yan"
       max_idle_connections: 10
       max_open_connections: 100
       conn_max_lifetime: "10m"
 
 oauthconfig:
-  secret_key: "work_space_auth_oauth_secret_key"
+  secret_key: "family_finance_oauth2_secret_key"
   access_expires_time: "24h"
   refresh_expires_time: "168h"
-  issuer: "github.com/jackyuan2022"
+  issuer: "github.com/loongkirin"
 
 redisconfig:
   master:

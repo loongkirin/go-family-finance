@@ -15,7 +15,7 @@ const (
 	authorizationClaimsKey  = "x-authorization-claims"
 )
 
-func OAuthMiddleware(oauthMaker oauth.OAuthMaker) gin.HandlerFunc {
+func OAuth(oauthMaker oauth.OAuthMaker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 		if len(authorizationHeader) == 0 {

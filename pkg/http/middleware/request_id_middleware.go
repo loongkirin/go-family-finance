@@ -5,7 +5,7 @@ import (
 	"github.com/loongkirin/go-family-finance/pkg/util"
 )
 
-func RequestIdMiddleware() gin.HandlerFunc {
+func RequestId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		requestId := GetRequestId(ctx)
 		if len(requestId) == 0 {

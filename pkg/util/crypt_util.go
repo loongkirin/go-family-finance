@@ -35,7 +35,7 @@ func EncryptBytes(key, text []byte) (string, error) {
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return "", err
 	}
-	cfb := cipher.NewCFBEncrypter(block, iv)
+	cfb := cipher.NewCTR(block, iv)
 	cfb.XORKeyStream(ciphertext[aes.BlockSize:], text)
 	return EncodeBytesToBase64(ciphertext), nil
 }
@@ -54,7 +54,7 @@ func Decrypt(key, b64s string) (string, error) {
 	}
 	iv := text[:aes.BlockSize]
 	text = text[aes.BlockSize:]
-	cfb := cipher.NewCFBDecrypter(block, iv)
+	cfb := cipher.NewCTR(block, iv)
 	cfb.XORKeyStream(text, text)
 	return string(text), nil
 }

@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: ./deployments/docker/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+      - otel-collector
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: family_finance_user
+      POSTGRES_PASSWORD: 520@yan
+      POSTGRES_DB: family_finance_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./deployments/config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP http
+      - "8888:8888"   # metrics
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./deployments/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14250:14250"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  postgres_data:
+  redis_data:
+  grafana_data: 

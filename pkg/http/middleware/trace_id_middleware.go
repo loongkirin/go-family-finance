@@ -5,7 +5,7 @@ import (
 	"github.com/loongkirin/go-family-finance/pkg/util"
 )
 
-func TraceIdMiddleware() gin.HandlerFunc {
+func TraceId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		traceId := GetTraceID(ctx)
 		if len(traceId) == 0 {

@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/loongkirin/go-family-finance/internal/api/controller"
@@ -15,11 +16,14 @@ type Router struct {
 
 func NewRouter() *Router {
 	engine := gin.Default()
-	engine.Use(middleware.RequestIdMiddleware())
-	engine.Use(middleware.TraceIdMiddleware())
+	engine.Use(middleware.RequestId())
+	engine.Use(middleware.TraceId())
 	engine.Use(middleware.Recovery(app.AppContext.APP_LOGGER))
 	engine.Use(middleware.Logger(app.AppContext.APP_LOGGER))
 	engine.Use(middleware.Tracing(app.AppContext.APP_TRACER))
+	// engine.Use(middleware.RateLimiter(middleware.NewSourceRateLimiter(), 1))
+	engine.Use(middleware.Retry(app.AppContext.APP_LOGGER, 3, time.Second*3))
+	engine.Use(middleware.RequestRateLimiter(middleware.NewRRateLimiter(30, 45)))
 	return &Router{engine: engine}
 }
 
