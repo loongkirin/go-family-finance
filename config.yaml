@@ -6,7 +6,7 @@ dbconfig:
     config: "TimeZone=Asia/Shanghai"
     db_name: "family_finance_db"
     user: "family_finance_user"
-    password: "520@yan"
+    password: "finance@user"
     max_idle_connections: 10
     max_open_connections: 100
     conn_max_lifetime: "10m"
@@ -16,7 +16,7 @@ dbconfig:
       config: "TimeZone=Asia/Shanghai"
       db_name: "family_finance_db"
       user: "family_finance_user"
-      password: "520@yan"
+      password: "finance@user"
       max_idle_connections: 10
       max_open_connections: 100
       conn_max_lifetime: "10m"
@@ -25,7 +25,7 @@ dbconfig:
       config: "TimeZone=Asia/Shanghai"
       db_name: "family_finance_db"
       user: "family_finance_user"
-      password: "520@yan"
+      password: "finance@user"
       max_idle_connections: 10
       max_open_connections: 100
       conn_max_lifetime: "10m"

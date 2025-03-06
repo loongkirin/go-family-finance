@@ -8,16 +8,26 @@ import (
 	"github.com/loongkirin/go-family-finance/pkg/cache"
 	"github.com/loongkirin/go-family-finance/pkg/captcha"
 	"github.com/loongkirin/go-family-finance/pkg/http/response"
+	"github.com/mojocn/base64Captcha"
 )
 
-var cpCache = cache.NewInMemoryStore(time.Minute * 3)
-var store = captcha.NewCaptchaStore(cpCache, time.Minute*1)
-var cp = captcha.NewCaptcha((store))
+// var cpCache = cache.NewInMemoryStore(time.Minute * 3)
+// var store = captcha.NewCaptchaStore(cpCache, time.Minute*1)
+// var cp = captcha.NewCaptcha((store))
+
+var (
+	cpCache cache.CacheStore
+	store   base64Captcha.Store
+	cp      *captcha.Captcha
+)
 
 type AuthorityController struct {
 }
 
 func NewAuthorityController() *AuthorityController {
+	cpCache = cache.NewRedisStore(app.AppContext.APP_REDIS.GetMasterDb(), "cpatcha_", time.Minute*3)
+	store = captcha.NewCaptchaStore(cpCache, time.Minute*1)
+	cp = captcha.NewCaptcha((store))
 	return &AuthorityController{}
 }
 

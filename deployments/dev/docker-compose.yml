@@ -1,23 +1,6 @@
 version: '3.8'
 
 services:
-  app:
-    build:
-      context: ..
-      dockerfile: ./deployments/docker/Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-      - redis
-      - otel-collector
-    environment:
-      - DB_HOST=postgres
-      - REDIS_HOST=redis
-      - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
-    networks:
-      - monitoring_network
-
   postgres:
     image: postgres:latest
     container_name: postgres
