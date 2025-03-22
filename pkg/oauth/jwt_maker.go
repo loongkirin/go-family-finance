@@ -15,25 +15,25 @@ type JWTMaker struct {
 	oauthConfig OAuthConfig
 }
 
-func (maker JWTMaker) GenerateAccessToken(email, mobile, username string) (string, *OAuthClaims, error) {
+func (maker JWTMaker) GenerateAccessToken(email, phone, username string) (string, *OAuthClaims, error) {
 	duration, err := time.ParseDuration(maker.oauthConfig.AccessExpiresTime)
 	if err != nil {
 		duration = time.Hour * 8
 	}
 
-	claims := NewOAuthClaims(email, mobile, username, maker.oauthConfig.Issuer, duration)
+	claims := NewOAuthClaims(email, phone, username, maker.oauthConfig.Issuer, duration)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := jwtToken.SignedString([]byte(maker.oauthConfig.SecretKey))
 	return token, claims, err
 }
 
-func (maker JWTMaker) GenerateRefreshToken(email, mobile, username string) (string, *OAuthClaims, error) {
+func (maker JWTMaker) GenerateRefreshToken(email, phone, username string) (string, *OAuthClaims, error) {
 	duration, err := time.ParseDuration(maker.oauthConfig.RefreshExpiresTime)
 	if err != nil {
 		duration = time.Hour * 24 * 7
 	}
 
-	claims := NewOAuthClaims(email, mobile, username, maker.oauthConfig.Issuer, duration)
+	claims := NewOAuthClaims(email, phone, username, maker.oauthConfig.Issuer, duration)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := jwtToken.SignedString([]byte(maker.oauthConfig.SecretKey))
 	return token, claims, err

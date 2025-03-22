@@ -17,7 +17,7 @@ var (
 type OAuthClaims struct {
 	Id        string    `json:"id"`
 	Email     string    `json:"email"`
-	Mobile    string    `json:"mobile"`
+	Phone     string    `json:"phone"`
 	UserName  string    `json:"user_name"`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `json:"expired_at"`
@@ -57,11 +57,11 @@ func (o OAuthClaims) Valid() error {
 	return nil
 }
 
-func NewOAuthClaims(email, mobile, userName, issuer string, duration time.Duration) *OAuthClaims {
+func NewOAuthClaims(email, phone, userName, issuer string, duration time.Duration) *OAuthClaims {
 	claims := &OAuthClaims{
 		Id:        util.GenerateId(),
 		Email:     email,
-		Mobile:    mobile,
+		Phone:     phone,
 		UserName:  userName,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),

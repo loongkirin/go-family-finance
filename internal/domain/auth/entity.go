@@ -7,11 +7,39 @@ import (
 type User struct {
 	database.TenantBaseModel
 	Name     string `json:"name" gorm:"size:100;not null"`
-	Mobile   string `json:"mobile" gorm:"size:100;not null;unique"`
+	Email    string `json:"email" gorm:"size:100;not null"`
+	Phone    string `json:"phone" gorm:"size:100;not null"`
 	Password string `json:"password" gorm:"size:100;not null"`
 	Active   bool   `json:"active" gorm:"default:true"`
 }
 
 func (entity *User) TableName() string {
-	return "go_family_finance_user"
+	return "finance_user"
+}
+
+type OAuthSession struct {
+	database.TenantBaseModel
+	UserId       string `json:"user_id" gorm:"size:32"`
+	Email        string `json:"email" gorm:"size:100"`
+	Phone        string `json:"phone" gorm:"size:100"`
+	UserName     string `json:"user_name"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	UserAgent    string `json:"user_agent"`
+	ClientIp     string `json:"client_ip"`
+	IsBlocked    bool   `json:"is_blocked"`
+	ExpiredAt    int64  `json:"expired_at"`
+}
+
+func (entity *OAuthSession) TableName() string {
+	return "finance_oauth_session"
+}
+
+type Tenant struct {
+	database.DbBaseModel
+	Name string `json:"name" gorm:"size:500;not null"`
+}
+
+func (entity *Tenant) TableName() string {
+	return "finance_tenant"
 }

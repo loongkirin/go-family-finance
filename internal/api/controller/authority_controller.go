@@ -5,9 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/loongkirin/go-family-finance/internal/app"
+	"github.com/loongkirin/go-family-finance/internal/domain/auth"
 	"github.com/loongkirin/go-family-finance/pkg/cache"
 	"github.com/loongkirin/go-family-finance/pkg/captcha"
+	"github.com/loongkirin/go-family-finance/pkg/database/postgres"
+	"github.com/loongkirin/go-family-finance/pkg/http/request"
 	"github.com/loongkirin/go-family-finance/pkg/http/response"
+	"github.com/loongkirin/go-family-finance/pkg/oauth"
 	"github.com/mojocn/base64Captcha"
 )
 
@@ -22,23 +26,79 @@ var (
 )
 
 type AuthorityController struct {
+	authService auth.AuthService
 }
 
 func NewAuthorityController() *AuthorityController {
 	cpCache = cache.NewRedisStore(app.AppContext.APP_REDIS.GetMasterDb(), "cpatcha_", time.Minute*3)
 	store = captcha.NewCaptchaStore(cpCache, time.Minute*1)
-	cp = captcha.NewCaptcha((store))
-	return &AuthorityController{}
+	cp = captcha.NewCaptcha(store)
+	oauthMaker, err := oauth.NewPasetoMaker(app.AppContext.APP_CONFIG.OAuthConfig)
+	if err != nil {
+		panic(err)
+	}
+	return &AuthorityController{
+		authService: auth.NewAuthService(
+			postgres.NewRepository[auth.User](app.AppContext.APP_DbContext),
+			postgres.NewRepository[auth.OAuthSession](app.AppContext.APP_DbContext),
+			postgres.NewRepository[auth.Tenant](app.AppContext.APP_DbContext),
+			oauthMaker,
+		),
+	}
 }
 
 func (t *AuthorityController) Captcha(c *gin.Context) {
 	if id, b64s, _, err := cp.GenerateDigitCaptcha(app.AppContext.APP_CONFIG.CaptchaConfig.CaptchaLength); err != nil {
 		response.Fail(c, "验证码获取失败", map[string]interface{}{})
 	} else {
-		response.Ok(c, "验证码获取成功", gin.H{
-			"captcha_id":     id,
-			"pic_path":       b64s,
-			"captcha_length": app.AppContext.APP_CONFIG.CaptchaConfig.CaptchaLength,
-		})
+		data := response.DataResponse[auth.GeneratedCaptchaDTO]{
+			Data: auth.GeneratedCaptchaDTO{
+				CaptchaId:     id,
+				PicPath:       b64s,
+				CaptchaLength: app.AppContext.APP_CONFIG.CaptchaConfig.CaptchaLength,
+			},
+		}
+
+		response.Ok(c, "验证码获取成功", data)
+	}
+}
+
+func (t *AuthorityController) Login(c *gin.Context) {
+	var l request.DataRequest[auth.LoginDTO]
+	if err := c.ShouldBindJSON(&l); err != nil {
+		response.BadRequest(c, "Bad Request:Invalid Parameters", map[string]interface{}{})
+		return
+	}
+
+	if store.Verify(l.Data.CaptchaId, l.Data.CaptchaValue, true) {
+		r, err := t.authService.Login(c, &l)
+		if err != nil {
+			response.Fail(c, err.Error(), map[string]interface{}{})
+			return
+		}
+
+		response.Ok(c, "登录成功", r)
+	} else {
+		response.Fail(c, "验证码错误", map[string]interface{}{})
+	}
+}
+
+func (t *AuthorityController) Register(c *gin.Context) {
+	var l request.DataRequest[auth.RegisterDTO]
+	if err := c.ShouldBindJSON(&l); err != nil {
+		response.BadRequest(c, "Bad Request:Invalid Parameters", map[string]interface{}{})
+		return
+	}
+
+	if store.Verify(l.Data.CaptchaId, l.Data.CaptchaValue, true) {
+		r, err := t.authService.Register(c, &l)
+		if err != nil {
+			response.Fail(c, err.Error(), map[string]interface{}{})
+			return
+		}
+
+		response.Ok(c, "注册成功", r)
+	} else {
+		response.Fail(c, "验证码错误", map[string]interface{}{})
 	}
 }

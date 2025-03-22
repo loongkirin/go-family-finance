@@ -15,24 +15,24 @@ type PasetoMaker struct {
 	oauthConfig OAuthConfig
 }
 
-func (maker PasetoMaker) GenerateAccessToken(email, mobile, username string) (string, *OAuthClaims, error) {
+func (maker PasetoMaker) GenerateAccessToken(email, phone, username string) (string, *OAuthClaims, error) {
 	duration, err := time.ParseDuration(maker.oauthConfig.AccessExpiresTime)
 	if err != nil {
 		duration = time.Hour * 8
 	}
 
-	claims := NewOAuthClaims(email, mobile, username, maker.oauthConfig.Issuer, duration)
+	claims := NewOAuthClaims(email, phone, username, maker.oauthConfig.Issuer, duration)
 	token, err := maker.paseto.Encrypt(maker.secretKey, claims, nil)
 	return token, claims, err
 }
 
-func (maker PasetoMaker) GenerateRefreshToken(email, mobile, username string) (string, *OAuthClaims, error) {
+func (maker PasetoMaker) GenerateRefreshToken(email, phone, username string) (string, *OAuthClaims, error) {
 	duration, err := time.ParseDuration(maker.oauthConfig.RefreshExpiresTime)
 	if err != nil {
 		duration = time.Hour * 24 * 7
 	}
 
-	claims := NewOAuthClaims(email, mobile, username, maker.oauthConfig.Issuer, duration)
+	claims := NewOAuthClaims(email, phone, username, maker.oauthConfig.Issuer, duration)
 	token, err := maker.paseto.Encrypt(maker.secretKey, claims, nil)
 	return token, claims, err
 }

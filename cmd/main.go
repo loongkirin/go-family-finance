@@ -9,6 +9,7 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/loongkirin/go-family-finance/internal/api/router"
 	"github.com/loongkirin/go-family-finance/internal/app"
+	"github.com/loongkirin/go-family-finance/internal/migrations"
 	"github.com/loongkirin/go-family-finance/pkg/database"
 	"github.com/loongkirin/go-family-finance/pkg/http/request"
 	"github.com/loongkirin/go-family-finance/pkg/logger"
@@ -30,6 +31,10 @@ func main() {
 	fmt.Println(dbQuery)
 
 	app.InitAppContext()
+
+	app.AppContext.APP_LOGGER.Info("migration database...", logger.Fields{})
+
+	migrations.Migrate(app.AppContext.APP_DbContext.GetMasterDb())
 
 	app.AppContext.APP_LOGGER.Info("Init router...", logger.Fields{})
 	// 初始化路由

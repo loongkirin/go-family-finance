@@ -1,0 +1,37 @@
+{"level":"info","time":"2025-03-08T15:37:18+08:00","message":"migration database..."}
+{"level":"info","time":"2025-03-08T15:37:18+08:00","message":"Init router..."}
+{"level":"info","time":"2025-03-08T15:37:18+08:00","message":"Start server..."}
+{"level":"info","time":"2025-03-08T15:38:35+08:00","message":"Shutting down server..."}
+{"level":"info","time":"2025-03-22T22:02:21+08:00","message":"migration database..."}
+{"level":"info","time":"2025-03-22T22:02:22+08:00","message":"Init router..."}
+{"level":"info","time":"2025-03-22T22:02:22+08:00","message":"Start server..."}
+{"level":"info","time":"2025-03-22T22:08:14+08:00","message":"Shutting down server..."}
+{"level":"info","time":"2025-03-22T22:18:25+08:00","message":"migration database..."}
+{"level":"info","time":"2025-03-22T22:18:25+08:00","message":"Init router..."}
+{"level":"info","time":"2025-03-22T22:18:25+08:00","message":"Start server..."}
+{"level":"info","status":200,"duration":4050,"traceId":"850328f3b7c74a97a8abf16aebc57a9a","requestId":"078a010a39f24119be94dc17ead32310","method":"GET","path":"/api/v1/auth/captcha","time":"2025-03-22T22:18:53+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"0c8090bcf5864ce8a2d2968a028a1e43","requestId":"0cfd672eda984020a7bf197263c29b51","method":"GET","path":"/favicon.ico","status":404,"duration":27,"time":"2025-03-22T22:18:53+08:00","message":"HTTP Request"}
+{"level":"info","duration":2510,"traceId":"fdf30c5ea7d6483babae894711153fd3","requestId":"28d2ddf9abbf4bd696e976ee145ace06","method":"GET","path":"/api/v1/auth/captcha","status":200,"time":"2025-03-22T22:33:21+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"79e9c26b3c304051942c63b5cba9eaea","requestId":"750d757551d14199a6ee24e0bc89b407","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":1947,"time":"2025-03-22T22:33:31+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"fd074d65c5d4450592d5d805e909bfcf","requestId":"c349b44f64e34fb6b049d9c09f87dbce","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2076,"time":"2025-03-22T22:33:32+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"20a4fcacbadd47e6a91e9deff6aa3f13","requestId":"9e00f25e223f4524b201b8999369eb8d","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":1798,"time":"2025-03-22T22:33:33+08:00","message":"HTTP Request"}
+{"level":"info","requestId":"3f6a60fe76694db1867ae7926a57e146","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":1866,"traceId":"ec050faa28bf41128376a002a4395a17","time":"2025-03-22T22:33:33+08:00","message":"HTTP Request"}
+{"level":"info","path":"/api/v1/auth/captcha","status":200,"duration":1256,"traceId":"d0fb90cb6d18460abfb047b0669db1af","requestId":"a77b814f7f534024bba1fb7669a9524b","method":"GET","time":"2025-03-22T22:33:47+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"e25759ed38694a61b5b4ff252f20de14","requestId":"c706bd6ab64b4b749fe6e86ad51b6242","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2104,"time":"2025-03-22T22:33:57+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"a0951c4c6cb848438dd5f86a3c46ce3b","requestId":"5942ad8c94864132b85028f1ea192a51","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":1928,"time":"2025-03-22T22:34:20+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"2ba881a6fca54220bc71a0389089674b","requestId":"a1d211ee63654433991c40fd5a241d0e","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":1892,"time":"2025-03-22T22:34:48+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"10be5bd866b447d7946d643cd23f07ba","requestId":"4cf91ba63943442a8e9600849d9d0562","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2740,"time":"2025-03-22T22:43:29+08:00","message":"HTTP Request"}
+{"level":"info","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2287,"traceId":"a397af0768ca448b804c0f9c45ff8749","requestId":"376702fd2e8c46438b2fde571fa01b3e","time":"2025-03-22T22:44:29+08:00","message":"HTTP Request"}
+{"level":"info","requestId":"a6d866b891f345708ebed6d65ec8680f","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":1734,"traceId":"7312e1576db94bc480314e7bfa596a50","time":"2025-03-22T22:44:34+08:00","message":"HTTP Request"}
+{"level":"info","status":200,"duration":2058,"traceId":"db165982e10449bf913eae711c845a37","requestId":"04302e31a41f4925bad53945fc22b33a","method":"GET","path":"/api/v1/auth/captcha","time":"2025-03-22T22:45:05+08:00","message":"HTTP Request"}
+{"level":"info","requestId":"1caa4b43013a4c81b7b04fb56a7905d3","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":3633,"traceId":"7685458877c844d88a88388edd1fc86d","time":"2025-03-22T22:45:14+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"3cc61f0efbbd461889a47a7dfa6bbc7a","requestId":"59baec6e815c4a6797ffd865e3b251c6","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2236,"time":"2025-03-22T22:45:18+08:00","message":"HTTP Request"}
+{"level":"info","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2501,"traceId":"6848367ee6bc4dae9bbabe0d229a8473","requestId":"b30291554d67479992cf154514f74f05","time":"2025-03-22T22:46:40+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"08013e9caf35468aa0a6f23f75861acc","requestId":"224668bb27224ca987a3cb51271f7d47","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2289,"time":"2025-03-22T22:47:21+08:00","message":"HTTP Request"}
+{"level":"info","path":"/api/v1/auth/captcha","status":200,"duration":2056,"traceId":"0736b9e67c8b4104ac80febfd2882d00","requestId":"f5674442f6be444ebaef85395cb5726f","method":"GET","time":"2025-03-22T22:47:27+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"c4b0c587591d478db8547aafc5f87882","requestId":"96049fa9a0084080a3c239bc1e65dc84","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2531,"time":"2025-03-22T22:48:16+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"23661da8e73047508bbc900ea8e9e022","requestId":"a8611e56b15e46f8ba66f0132f4a2b70","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2349,"time":"2025-03-22T22:50:20+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"d880ee6299734c49a42c008504baf527","requestId":"6103186e5170434ab91f642aecf38535","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2505,"time":"2025-03-22T22:50:26+08:00","message":"HTTP Request"}
+{"level":"info","traceId":"fef2f0b0be304eff9af97f14695313f8","requestId":"5f9e9712cabf49798cc4c8e62a015a1f","method":"GET","path":"/api/v1/auth/captcha","status":200,"duration":2341,"time":"2025-03-22T22:50:52+08:00","message":"HTTP Request"}
+{"level":"info","status":200,"duration":1882,"traceId":"b5b761f6264a4b3d99bbf666efcb19bd","requestId":"2123bfe448a54293a4c5e4550ed19aeb","method":"GET","path":"/api/v1/auth/captcha","time":"2025-03-22T22:51:11+08:00","message":"HTTP Request"}
+{"level":"info","time":"2025-03-22T22:55:15+08:00","message":"Shutting down server..."}
