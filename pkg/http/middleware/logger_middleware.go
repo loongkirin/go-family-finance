@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"bytes"
+	"io"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +24,12 @@ func Logger(logger pkglogger.Logger) gin.HandlerFunc {
 			requestId = util.GenerateId()
 		}
 		SetRequestId(c, requestId)
+		body, err := c.GetRawData()
+		if err != nil {
+			logger.Error("Failed to get raw data", pkglogger.Fields{"error": err})
+			body = []byte{}
+		}
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 		// 处理请求
 		c.Next()
 
@@ -33,12 +41,17 @@ func Logger(logger pkglogger.Logger) gin.HandlerFunc {
 		// }).Logger()
 
 		logger.Info("HTTP Request", pkglogger.Fields{
-			"traceId":   traceId,
-			"requestId": requestId,
-			"method":    c.Request.Method,
-			"path":      c.Request.URL.Path,
-			"status":    c.Writer.Status(),
-			"duration":  duration,
+			"traceId":     traceId,
+			"requestId":   requestId,
+			"method":      c.Request.Method,
+			"path":        c.Request.URL.Path,
+			"status":      c.Writer.Status(),
+			"duration":    duration,
+			"clientIp":    c.ClientIP(),
+			"userAgent":   c.Request.UserAgent(),
+			"requestSize": c.Request.ContentLength,
+			"requestBody": string(body),
+			"headers":     c.Request.Header,
 		})
 	}
 }

@@ -6,29 +6,26 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/jinzhu/copier"
 	"github.com/loongkirin/go-family-finance/internal/api/router"
 	"github.com/loongkirin/go-family-finance/internal/app"
 	"github.com/loongkirin/go-family-finance/internal/migrations"
-	"github.com/loongkirin/go-family-finance/pkg/database"
-	"github.com/loongkirin/go-family-finance/pkg/http/request"
 	"github.com/loongkirin/go-family-finance/pkg/logger"
 )
 
 func main() {
-	quertFilter := request.NewQueryFilter("name", []interface{}{"test"}, request.EQ)
-	queryWhere := request.NewQueryWhere([]*request.QueryFilter{quertFilter}, request.AND)
-	queryOrderBy := request.NewQueryOrderBy("created_at", true)
-	query := request.NewQuery([]*request.QueryWhere{queryWhere}, 100, 1, []*request.QueryOrderBy{queryOrderBy})
+	// quertFilter := request.NewQueryFilter("name", []interface{}{"test"}, request.EQ)
+	// queryWhere := request.NewQueryWhere([]*request.QueryFilter{quertFilter}, request.AND)
+	// queryOrderBy := request.NewQueryOrderBy("created_at", true)
+	// query := request.NewQuery([]*request.QueryWhere{queryWhere}, 100, 1, []*request.QueryOrderBy{queryOrderBy})
 
-	dbQuery := &database.DbQuery{}
-	// err := copier.Copy(dbQuery, query)
-	err := copier.CopyWithOption(dbQuery, query, copier.Option{DeepCopy: true})
-	if err != nil {
-		fmt.Println(err)
-	}
+	// dbQuery := &database.DbQuery{}
+	// // err := copier.Copy(dbQuery, query)
+	// err := copier.CopyWithOption(dbQuery, query, copier.Option{DeepCopy: true})
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	fmt.Println(dbQuery)
+	// fmt.Println(dbQuery)
 
 	app.InitAppContext()
 

@@ -43,6 +43,8 @@ func initAuthorityRouter(router *gin.RouterGroup) (R gin.IRoutes) {
 	authRouter := router.Group("auth")
 	authApi := controller.NewAuthorityController()
 	authRouter.GET("captcha", authApi.Captcha)
+	authRouter.POST("login", authApi.Login)
+	authRouter.POST("register", authApi.Register)
 	return authRouter
 }
 
