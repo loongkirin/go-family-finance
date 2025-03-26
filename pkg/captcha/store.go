@@ -1,6 +1,7 @@
 package captcha
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/loongkirin/go-family-finance/pkg/cache"
@@ -35,5 +36,6 @@ func (s *captchaStore) Get(id string, clear bool) string {
 }
 
 func (s *captchaStore) Verify(id, answer string, clear bool) bool {
+	fmt.Println("id", id, "answer", answer, "clear", clear)
 	return s.Get(id, clear) == answer
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -89,8 +90,10 @@ func (t *AuthorityController) Register(c *gin.Context) {
 		response.BadRequest(c, "Bad Request:Invalid Parameters", map[string]interface{}{})
 		return
 	}
-
-	if store.Verify(l.Data.CaptchaId, l.Data.CaptchaValue, true) {
+	fmt.Println("l.Data.CaptchaId", l.Data.CaptchaId, "l.Data.CaptchaValue", l.Data.CaptchaValue)
+	verfied := store.Verify(l.Data.CaptchaId, l.Data.CaptchaValue, true)
+	fmt.Println("verfied", verfied)
+	if verfied {
 		r, err := t.authService.Register(c, &l)
 		if err != nil {
 			response.Fail(c, err.Error(), map[string]interface{}{})

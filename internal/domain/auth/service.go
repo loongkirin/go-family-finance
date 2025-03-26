@@ -47,12 +47,12 @@ func (s *service) Login(ctx context.Context, req *request.DataRequest[LoginDTO])
 		return nil, errors.New("密码错误")
 	}
 	tenantId := ""
-	accessToken, _, authErr := s.oauthMaker.GenerateAccessToken(user.Email, user.Phone, user.Name)
+	accessToken, _, authErr := s.oauthMaker.GenerateAccessToken(user.Id, user.Email, user.Phone, user.Name)
 	if authErr != nil {
 		return nil, authErr
 	}
 
-	refreshToken, claims, authErr := s.oauthMaker.GenerateRefreshToken(user.Email, user.Phone, user.Name)
+	refreshToken, claims, authErr := s.oauthMaker.GenerateRefreshToken(user.Id, user.Email, user.Phone, user.Name)
 	if authErr != nil {
 		return nil, authErr
 	}
@@ -66,7 +66,7 @@ func (s *service) Login(ctx context.Context, req *request.DataRequest[LoginDTO])
 		AccessToken:     accessToken,
 		RefreshToken:    refreshToken,
 		ExpiredAt:       claims.ExpiredAt.UnixMilli(),
-		TenantBaseModel: database.NewTenantBaseModel(tenantId, claims.Id),
+		TenantBaseModel: database.NewTenantBaseModel(tenantId, util.GenerateId()),
 	}
 	session, err = s.oauthSessionRepo.Create(ctx, session)
 	if err != nil {
@@ -109,6 +109,14 @@ func (s *service) Register(ctx context.Context, req *request.DataRequest[Registe
 	password, err := util.BcryptHash(req.Data.Password)
 	if err != nil {
 		return nil, err
+	}
+
+	dbUser, err := s.findUserByPhone(ctx, req.Data.Phone)
+	if err != nil {
+		return nil, err
+	}
+	if dbUser != nil {
+		return nil, errors.New("用户已存在")
 	}
 
 	user := &User{

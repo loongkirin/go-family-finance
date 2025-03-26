@@ -5,7 +5,6 @@ import (
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v5"
-	util "github.com/loongkirin/go-family-finance/pkg/util"
 )
 
 var (
@@ -15,7 +14,7 @@ var (
 )
 
 type OAuthClaims struct {
-	Id        string    `json:"id"`
+	UserId    string    `json:"user_id"`
 	Email     string    `json:"email"`
 	Phone     string    `json:"phone"`
 	UserName  string    `json:"user_name"`
@@ -57,9 +56,9 @@ func (o OAuthClaims) Valid() error {
 	return nil
 }
 
-func NewOAuthClaims(email, phone, userName, issuer string, duration time.Duration) *OAuthClaims {
+func NewOAuthClaims(userId, email, phone, userName, issuer string, duration time.Duration) *OAuthClaims {
 	claims := &OAuthClaims{
-		Id:        util.GenerateId(),
+		UserId:    userId,
 		Email:     email,
 		Phone:     phone,
 		UserName:  userName,

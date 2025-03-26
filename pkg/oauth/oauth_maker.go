@@ -1,7 +1,7 @@
 package oauth
 
 type OAuthMaker interface {
-	GenerateAccessToken(email, phone, username string) (string, *OAuthClaims, error)
-	GenerateRefreshToken(email, phone, username string) (string, *OAuthClaims, error)
+	GenerateAccessToken(userId, email, phone, userName string) (string, *OAuthClaims, error)
+	GenerateRefreshToken(userId, email, phone, userName string) (string, *OAuthClaims, error)
 	VerifyToken(token string) (*OAuthClaims, error)
 }
