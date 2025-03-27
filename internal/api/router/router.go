@@ -8,6 +8,7 @@ import (
 	"github.com/loongkirin/go-family-finance/internal/api/controller"
 	"github.com/loongkirin/go-family-finance/internal/app"
 	"github.com/loongkirin/go-family-finance/pkg/http/middleware"
+	"github.com/loongkirin/go-family-finance/pkg/oauth"
 )
 
 type Router struct {
@@ -41,6 +42,11 @@ func (r *Router) InitRouter() {
 
 func initAuthorityRouter(router *gin.RouterGroup) (R gin.IRoutes) {
 	authRouter := router.Group("auth")
+	oauthMaker, err := oauth.NewPasetoMaker(app.AppContext.APP_CONFIG.OAuthConfig)
+	if err != nil {
+		panic(err)
+	}
+	authRouter.Use(middleware.OAuth(oauthMaker))
 	authApi := controller.NewAuthorityController()
 	authRouter.GET("captcha", authApi.Captcha)
 	authRouter.POST("login", authApi.Login)

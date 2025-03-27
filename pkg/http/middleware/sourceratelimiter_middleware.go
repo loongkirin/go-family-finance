@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/loongkirin/go-family-finance/pkg/http/response"
 	"golang.org/x/time/rate"
 )
 
@@ -57,9 +58,7 @@ func RequestRateLimiter(limiter *RRateLimiter) gin.HandlerFunc {
 		source := fmt.Sprintf("%s:%s:%s", c.ClientIP(), c.Request.Method, c.Request.URL.Path)
 		limiter := limiter.GetLimiter(source)
 		if !limiter.Allow() {
-			c.JSON(http.StatusTooManyRequests, gin.H{
-				"error": "Too many requests",
-			})
+			c.JSON(http.StatusTooManyRequests, response.NewResponse(response.ERROR, "Too many requests"))
 			c.Abort()
 			return
 		}

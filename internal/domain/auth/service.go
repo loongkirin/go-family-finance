@@ -66,7 +66,7 @@ func (s *service) Login(ctx context.Context, req *request.DataRequest[LoginDTO])
 		AccessToken:     accessToken,
 		RefreshToken:    refreshToken,
 		ExpiredAt:       claims.ExpiredAt.UnixMilli(),
-		TenantBaseModel: database.NewTenantBaseModel(tenantId, util.GenerateId()),
+		TenantBaseModel: database.NewTenantBaseModel(tenantId, claims.Id),
 	}
 	session, err = s.oauthSessionRepo.Create(ctx, session)
 	if err != nil {

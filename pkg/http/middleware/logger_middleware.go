@@ -24,12 +24,15 @@ func Logger(logger pkglogger.Logger) gin.HandlerFunc {
 			requestId = util.GenerateId()
 		}
 		SetRequestId(c, requestId)
-		body, err := c.GetRawData()
-		if err != nil {
-			logger.Error("Failed to get raw data", pkglogger.Fields{"error": err})
-			body = []byte{}
+		var body []byte
+		if c.Request.Body != nil {
+			body, err := c.GetRawData()
+			if err != nil {
+				logger.Error("Failed to get raw data", pkglogger.Fields{"error": err})
+				body = []byte{}
+			}
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 		}
-		c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 		// 处理请求
 		c.Next()
 

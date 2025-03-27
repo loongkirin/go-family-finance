@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/loongkirin/go-family-finance/pkg/http/response"
 	pkglogger "github.com/loongkirin/go-family-finance/pkg/logger"
 )
 
@@ -18,9 +19,7 @@ func Recovery(logger pkglogger.Logger) gin.HandlerFunc {
 					"message":   err,
 				})
 
-				c.AbortWithStatusJSON(500, gin.H{
-					"error": "Internal server error",
-				})
+				c.AbortWithStatusJSON(500, response.NewResponse(response.ERROR, "Internal server error"))
 			}
 		}()
 		c.Next()
