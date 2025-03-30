@@ -70,7 +70,7 @@ loggerconfig  :
 
 telemetryconfig:
   service_name: "go-family-finance"
-  collector_url: "http://localhost:4318/v1/traces"
+  collector_url: "localhost:4317"
   trace_sample: 1.0
 
 captchaconfig:

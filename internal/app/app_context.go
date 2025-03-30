@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/fsnotify/fsnotify"
@@ -10,6 +11,7 @@ import (
 	"github.com/loongkirin/go-family-finance/pkg/logger"
 	"github.com/loongkirin/go-family-finance/pkg/telemetry"
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/singleflight"
 )
@@ -22,6 +24,7 @@ type appContext struct {
 	APP_Concurrency_Controller *singleflight.Group
 	APP_LOGGER                 logger.Logger
 	APP_TRACER                 trace.Tracer
+	APP_METRICS                metric.Meter
 }
 
 var AppContext appContext
@@ -33,6 +36,7 @@ func InitAppContext() {
 	AppContext.initViper()
 	AppContext.initLogger()
 	AppContext.initTracer()
+	AppContext.initMetrics()
 	AppContext.initRedis()
 	AppContext.initDbContext()
 }
@@ -73,11 +77,22 @@ func (ctx *appContext) initLogger() {
 }
 
 func (ctx *appContext) initTracer() {
-	tp, err := telemetry.InitTracer(ctx.APP_CONFIG.TelemetryConfig)
+	tp, err := telemetry.InitTracer(context.Background(), ctx.APP_CONFIG.TelemetryConfig)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		ctx.APP_TRACER = tp.Tracer("go-family-finance")
+		ctx.APP_TRACER = tp.Tracer(ctx.APP_CONFIG.TelemetryConfig.ServiceName)
+		defer telemetry.ShutdownTracer(context.Background())
+	}
+}
+
+func (ctx *appContext) initMetrics() {
+	metrics, err := telemetry.InitMetrics(context.Background(), ctx.APP_CONFIG.TelemetryConfig)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		ctx.APP_METRICS = metrics
+		defer telemetry.ShutdownMetrics(context.Background())
 	}
 }
 

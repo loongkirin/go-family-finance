@@ -2,21 +2,36 @@ package telemetry
 
 import (
 	"context"
+	"fmt"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
 )
 
-func InitTracer(cfg TelemetryConfig) (*sdktrace.TracerProvider, error) {
+func InitTracer(ctx context.Context, cfg TelemetryConfig) (*sdktrace.TracerProvider, error) {
 	// 创建 OTLP exporter
-	exporter, err := otlptracegrpc.New(context.Background(),
-		otlptracegrpc.WithEndpoint(cfg.CollectorURL),
-		otlptracegrpc.WithInsecure(),
-	)
+	var exporter *otlptrace.Exporter
+	var err error
+	switch cfg.CollectorType {
+	case "grpc":
+		exporter, err = otlptracegrpc.New(ctx,
+			otlptracegrpc.WithEndpoint(cfg.CollectorURL),
+			otlptracegrpc.WithInsecure(),
+		)
+	case "http":
+		exporter, err = otlptracehttp.New(ctx,
+			otlptracehttp.WithEndpoint(cfg.CollectorURL),
+			otlptracehttp.WithInsecure(),
+		)
+	default:
+		return nil, fmt.Errorf("unsupported exporter type: %s", cfg.CollectorType)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -25,6 +40,8 @@ func InitTracer(cfg TelemetryConfig) (*sdktrace.TracerProvider, error) {
 	resource := resource.NewWithAttributes(
 		semconv.SchemaURL,
 		semconv.ServiceNameKey.String(cfg.ServiceName),
+		semconv.ServiceVersionKey.String(cfg.ServiceVersion),
+		semconv.DeploymentEnvironmentNameKey.String(cfg.ServiceEnvironment),
 	)
 
 	// 创建 TracerProvider
@@ -44,4 +61,11 @@ func InitTracer(cfg TelemetryConfig) (*sdktrace.TracerProvider, error) {
 	))
 
 	return tp, nil
+}
+
+func ShutdownTracer(ctx context.Context) error {
+	if tp, ok := otel.GetTracerProvider().(*sdktrace.TracerProvider); ok {
+		return tp.Shutdown(ctx)
+	}
+	return nil
 }
