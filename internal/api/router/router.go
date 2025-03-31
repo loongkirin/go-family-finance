@@ -9,6 +9,9 @@ import (
 	"github.com/loongkirin/go-family-finance/internal/app"
 	"github.com/loongkirin/go-family-finance/pkg/http/middleware"
 	"github.com/loongkirin/go-family-finance/pkg/oauth"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 type Router struct {
@@ -25,6 +28,15 @@ func NewRouter() *Router {
 	// engine.Use(middleware.RateLimiter(middleware.NewSourceRateLimiter(), 1))
 	engine.Use(middleware.Retry(app.AppContext.APP_LOGGER, 3, time.Second*3))
 	engine.Use(middleware.RequestRateLimiter(middleware.NewRRateLimiter(30, 45)))
+	engine.Use(otelgin.Middleware(
+		"go-family-finance",
+		otelgin.WithTracerProvider(otel.GetTracerProvider()),
+		otelgin.WithPropagators(propagation.TraceContext{}),
+		otelgin.WithFilter(func(req *http.Request) bool {
+			// Skip tracing for health checks
+			return req.URL.Path != "/health"
+		}),
+	))
 	return &Router{engine: engine}
 }
 
