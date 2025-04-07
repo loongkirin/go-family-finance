@@ -1,11 +1,11 @@
 package auth
 
 import (
-	"github.com/loongkirin/go-family-finance/internal/domain/models"
+	"github.com/loongkirin/gdk/database/model"
 )
 
 type User struct {
-	models.TenantBaseModel
+	model.TenantBaseModel
 	Name     string `json:"name" gorm:"size:100;not null"`
 	Email    string `json:"email" gorm:"size:100;not null"`
 	Phone    string `json:"phone" gorm:"size:100;not null"`
@@ -18,7 +18,7 @@ func (entity *User) TableName() string {
 }
 
 type OAuthSession struct {
-	models.TenantBaseModel
+	model.TenantBaseModel
 	UserId       string `json:"user_id" gorm:"size:32"`
 	Email        string `json:"email" gorm:"size:100"`
 	Phone        string `json:"phone" gorm:"size:100"`
@@ -36,7 +36,7 @@ func (entity *OAuthSession) TableName() string {
 }
 
 type Tenant struct {
-	models.DbBaseModel
+	model.DbBaseModel
 	Name string `json:"name" gorm:"size:500;not null"`
 }
 

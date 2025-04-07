@@ -5,13 +5,14 @@ go 1.24.2
 require (
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gin-gonic/gin v1.10.0
-	github.com/loongkirin/gdk v0.0.1-alpha.4
+	github.com/loongkirin/gdk v0.0.1-alpha.7
 	github.com/mojocn/base64Captcha v1.3.8
 	github.com/prometheus/client_golang v1.21.1
 	github.com/spf13/viper v1.20.1
 	go.opentelemetry.io/otel/metric v1.35.0
 	go.opentelemetry.io/otel/trace v1.35.0
 	golang.org/x/sync v0.13.0
+	golang.org/x/time v0.11.0
 	gorm.io/gorm v1.25.12
 )
 
@@ -94,7 +95,6 @@ require (
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
-	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250218202821-56aae31c358a // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250218202821-56aae31c358a // indirect

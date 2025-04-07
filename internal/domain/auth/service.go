@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 
+	"github.com/loongkirin/gdk/database/model"
 	"github.com/loongkirin/gdk/database/query"
 	"github.com/loongkirin/gdk/database/repository"
 	"github.com/loongkirin/gdk/net/http/request"
 	"github.com/loongkirin/gdk/net/http/response"
 	"github.com/loongkirin/gdk/oauth"
 	"github.com/loongkirin/gdk/util"
-	"github.com/loongkirin/go-family-finance/internal/domain/models"
 )
 
 type AuthService interface {
@@ -67,7 +67,7 @@ func (s *service) Login(ctx context.Context, req *request.DataRequest[LoginDTO])
 		AccessToken:     accessToken,
 		RefreshToken:    refreshToken,
 		ExpiredAt:       claims.ExpiredAt.UnixMilli(),
-		TenantBaseModel: models.NewTenantBaseModel(tenantId, claims.Id),
+		TenantBaseModel: model.NewTenantBaseModel(tenantId, claims.Id),
 	}
 	session, err = s.oauthSessionRepo.Add(ctx, session)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *service) Register(ctx context.Context, req *request.DataRequest[Registe
 	if tenant == nil {
 		tenant = &Tenant{
 			Name:        req.Data.TenantName,
-			DbBaseModel: models.NewDbBaseModel(util.GenerateId()),
+			DbBaseModel: model.NewDbBaseModel(util.GenerateId()),
 		}
 		tenant, err = s.tenantRepo.Add(ctx, tenant)
 		if err != nil {
@@ -125,7 +125,7 @@ func (s *service) Register(ctx context.Context, req *request.DataRequest[Registe
 		Phone:           req.Data.Phone,
 		Email:           req.Data.Email,
 		Password:        password,
-		TenantBaseModel: models.NewTenantBaseModel(tenant.Id, util.GenerateId()),
+		TenantBaseModel: model.NewTenantBaseModel(tenant.Id, util.GenerateId()),
 	}
 	user, err = s.userRepo.Add(ctx, user)
 	if err != nil {

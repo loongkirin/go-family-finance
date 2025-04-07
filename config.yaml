@@ -10,6 +10,8 @@ dbconfig:
     max_idle_connections: 10
     max_open_connections: 100
     conn_max_lifetime: "10m"
+    enable_tracing: true
+    enable_metrics: true
   slaves:
     - host: "127.0.0.1"
       port: 5432
@@ -20,6 +22,8 @@ dbconfig:
       max_idle_connections: 10
       max_open_connections: 100
       conn_max_lifetime: "10m"
+      enable_tracing: true
+      enable_metrics: true
     - host: "127.0.0.1"
       port: 5432
       config: "TimeZone=Asia/Shanghai"
@@ -29,6 +33,8 @@ dbconfig:
       max_idle_connections: 10
       max_open_connections: 100
       conn_max_lifetime: "10m"
+      enable_tracing: true
+      enable_metrics: true
 
 oauthconfig:
   secret_key: "family_finance_oauth2_secret_key"
@@ -43,17 +49,23 @@ redisconfig:
     password: ""
     db: 0
     pool_size: 10
+    enable_tracing: true
+    enable_metrics: true
   slaves:
     - host: "127.0.0.1"
       port: 6379
       password: ""
       db: 0
       pool_size: 10
+      enable_tracing: true
+      enable_metrics: true
     - host: "127.0.0.1"
       port: 6379
       password: ""
       db: 0
       pool_size: 10
+      enable_tracing: true
+      enable_metrics: true
 
 serverconfig:
   port: 8081

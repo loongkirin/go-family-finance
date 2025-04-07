@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/loongkirin/gdk/net/http/gin/middleware"
@@ -9,6 +10,7 @@ import (
 	"github.com/loongkirin/go-family-finance/internal/api/controller"
 	"github.com/loongkirin/go-family-finance/internal/app"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/time/rate"
 )
 
 type Router struct {
@@ -21,22 +23,22 @@ func NewRouter() *Router {
 	engine.Use(middleware.TraceId())
 	engine.Use(middleware.Recovery(app.AppContext.APP_LOGGER))
 	engine.Use(middleware.Logger(app.AppContext.APP_LOGGER))
-	// engine.Use(middleware.OtelTracing())
-	// engine.Use(middleware.Tracing(app.AppContext.APP_TRACER))
-	// // engine.Use(middleware.RateLimiter(middleware.NewSourceRateLimiter(), 1))
-	// engine.Use(middleware.Retry(app.AppContext.APP_LOGGER, 3, time.Second*3))
-	// engine.Use(middleware.RequestRateLimiter(middleware.NewRRateLimiter(30, 45)))
-	// engine.Use(otelgin.Middleware(
-	// 	"go-family-finance",
-	// 	otelgin.WithTracerProvider(otel.GetTracerProvider()),
-	// 	otelgin.WithPropagators(propagation.TraceContext{}),
-	// 	otelgin.WithFilter(func(req *http.Request) bool {
-	// 		// Skip tracing for health checks
-	// 		return req.URL.Path != "/health"
-	// 	}),
-	// ))
-
+	engine.Use(middleware.Tracing(app.AppContext.APP_TRACER))
+	int64Meter := telemetry.NewDynamicMeter[int64](app.AppContext.APP_METRICS)
+	engine.Use(middleware.BlockRateLimiter(middleware.NewIPBlockRateLimiter(middleware.RateLimiterConfig{
+		Limit:   30,
+		Timeout: time.Second * 45,
+		Meter:   int64Meter,
+		Logger:  app.AppContext.APP_LOGGER,
+	})))
+	engine.Use(middleware.BreakRateLimiter(middleware.NewIPBreakRateLimiter(middleware.BreakRateLimiterConfig{
+		Limit:  rate.Limit(30),
+		Burst:  45,
+		Meter:  int64Meter,
+		Logger: app.AppContext.APP_LOGGER,
+	})))
 	dynamicMeter := telemetry.NewDynamicMeter[float64](app.AppContext.APP_METRICS)
+	engine.Use(middleware.Retry(app.AppContext.APP_LOGGER, 3, time.Second*3))
 	engine.Use(middleware.Metrics(dynamicMeter))
 	return &Router{engine: engine}
 }
