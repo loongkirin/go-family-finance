@@ -1,0 +1,84 @@
+dbconfig:
+  db_type: "postgres"
+  master:
+    host: "127.0.0.1"
+    port: 5432
+    config: "TimeZone=Asia/Shanghai"
+    db_name: "family_finance_db"
+    user: "family_finance_user"
+    password: "finance@user"
+    max_idle_connections: 10
+    max_open_connections: 100
+    conn_max_lifetime: "10m"
+  slaves:
+    - host: "127.0.0.1"
+      port: 5432
+      config: "TimeZone=Asia/Shanghai"
+      db_name: "family_finance_db"
+      user: "family_finance_user"
+      password: "finance@user"
+      max_idle_connections: 10
+      max_open_connections: 100
+      conn_max_lifetime: "10m"
+    - host: "127.0.0.1"
+      port: 5432
+      config: "TimeZone=Asia/Shanghai"
+      db_name: "family_finance_db"
+      user: "family_finance_user"
+      password: "finance@user"
+      max_idle_connections: 10
+      max_open_connections: 100
+      conn_max_lifetime: "10m"
+
+oauthconfig:
+  secret_key: "family_finance_oauth2_secret_key"
+  access_expires_time: "24h"
+  refresh_expires_time: "168h"
+  issuer: "github.com/loongkirin"
+
+redisconfig:
+  master:
+    host: "127.0.0.1"
+    port: 6379
+    password: ""
+    db: 0
+    pool_size: 10
+  slaves:
+    - host: "127.0.0.1"
+      port: 6379
+      password: ""
+      db: 0
+      pool_size: 10
+    - host: "127.0.0.1"
+      port: 6379
+      password: ""
+      db: 0
+      pool_size: 10
+
+serverconfig:
+  port: 8081
+  mode: "debug"
+
+loggerconfig  :
+  logger_type: "zerolog"
+  log_config:
+    level: "debug"
+    file_path: "logs/app.log"
+    max_size: 100
+    max_backups: 10
+    max_age: 30
+
+telemetryconfig:
+  service_name: "go-family-finance"
+  service_version: "1.0.0"
+  service_namespace: "default"
+  service_environment: "dev"
+  collector_url: "localhost:4317"
+  trace_sample: 1.0
+  collector_type: "grpc"
+  collecte_interval: "1s"
+  collecte_timeout: "15s"
+
+captchaconfig:
+  captcha_type: "string"
+  captcha_length: 4
