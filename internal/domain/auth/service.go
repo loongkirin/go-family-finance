@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/loongkirin/gdk/database/model"
 	"github.com/loongkirin/gdk/database/query"
@@ -44,16 +44,20 @@ func (s *service) Login(ctx context.Context, req *request.DataRequest[LoginDTO])
 	if err != nil {
 		return nil, err
 	}
+
+	// fmt.Println("login user", user)
 	if !util.BcryptVerify(req.Data.Password, user.Password) {
-		return nil, errors.New("密码错误")
+		return nil, ErrPasswordInvalid
 	}
-	tenantId := ""
+	tenantId := user.TenantId
+	// fmt.Println("login tenantId", tenantId)
 	accessToken, _, authErr := s.oauthMaker.GenerateAccessToken(user.Id, user.Email, user.Phone, user.Name)
+	// fmt.Println("login accessToken", accessToken)
 	if authErr != nil {
 		return nil, authErr
 	}
-
 	refreshToken, claims, authErr := s.oauthMaker.GenerateRefreshToken(user.Id, user.Email, user.Phone, user.Name)
+	// fmt.Println("login refreshToken", refreshToken)
 	if authErr != nil {
 		return nil, authErr
 	}
@@ -69,10 +73,13 @@ func (s *service) Login(ctx context.Context, req *request.DataRequest[LoginDTO])
 		ExpiredAt:       claims.ExpiredAt.UnixMilli(),
 		TenantBaseModel: model.NewTenantBaseModel(tenantId, claims.Id),
 	}
+
 	session, err = s.oauthSessionRepo.Add(ctx, session)
 	if err != nil {
+		fmt.Println("login session error", err)
 		return nil, err
 	}
+
 	return &response.DataResponse[UserDTO]{
 		Data: UserDTO{
 			UserId:   user.Id,
@@ -94,7 +101,7 @@ func (s *service) Login(ctx context.Context, req *request.DataRequest[LoginDTO])
 
 func (s *service) Register(ctx context.Context, req *request.DataRequest[RegisterDTO]) (*response.DataResponse[UserDTO], error) {
 	tenant, err := s.findTenantByName(ctx, req.Data.TenantName)
-	if err != nil {
+	if err != nil && err != ErrTenantNotFound {
 		return nil, err
 	}
 	if tenant == nil {
@@ -113,11 +120,11 @@ func (s *service) Register(ctx context.Context, req *request.DataRequest[Registe
 	}
 
 	dbUser, err := s.findUserByPhone(ctx, req.Data.Phone)
-	if err != nil {
+	if err != nil && err != ErrUserNotFound {
 		return nil, err
 	}
 	if dbUser != nil {
-		return nil, errors.New("用户已存在")
+		return nil, ErrUserExists
 	}
 
 	user := &User{
@@ -148,7 +155,7 @@ func (s *service) Register(ctx context.Context, req *request.DataRequest[Registe
 
 func (s *service) findUserByPhone(ctx context.Context, phone string) (*User, error) {
 	if len(phone) == 0 {
-		return nil, errors.New("手机号不能为空")
+		return nil, ErrPhoneRequired
 	}
 	wheres := []query.DbQueryWhere{}
 	filters := []query.DbQueryFilter{query.NewDbQueryFilter("phone", []interface{}{phone}, query.EQ, "String")}
@@ -163,14 +170,14 @@ func (s *service) findUserByPhone(ctx context.Context, phone string) (*User, err
 		return nil, err
 	}
 	if len(users) == 0 {
-		return nil, errors.New("用户不存在")
+		return nil, ErrUserNotFound
 	}
 	return &users[0], nil
 }
 
 func (s *service) findTenantByName(ctx context.Context, name string) (*Tenant, error) {
 	if len(name) == 0 {
-		return nil, errors.New("租户名称不能为空")
+		return nil, ErrTenantNameRequired
 	}
 	wheres := []query.DbQueryWhere{}
 	filters := []query.DbQueryFilter{query.NewDbQueryFilter("name", []interface{}{name}, query.EQ, "String")}
@@ -185,7 +192,7 @@ func (s *service) findTenantByName(ctx context.Context, name string) (*Tenant, e
 		return nil, err
 	}
 	if len(tenants) == 0 {
-		return nil, nil
+		return nil, ErrTenantNotFound
 	}
 	return &tenants[0], nil
 }

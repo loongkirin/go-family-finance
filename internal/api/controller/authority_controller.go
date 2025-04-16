@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,10 +15,6 @@ import (
 	"github.com/loongkirin/go-family-finance/internal/domain/auth"
 	"github.com/mojocn/base64Captcha"
 )
-
-// var cpCache = cache.NewInMemoryStore(time.Minute * 3)
-// var store = captcha.NewCaptchaStore(cpCache, time.Minute*1)
-// var cp = captcha.NewCaptcha((store))
 
 var (
 	cpCache cache.CacheStore
@@ -73,7 +68,10 @@ func (t *AuthorityController) Login(c *gin.Context) {
 	}
 
 	if store.Verify(l.Data.CaptchaId, l.Data.CaptchaValue, true) {
-		r, err := t.authService.Login(c, &l)
+		ctx := c.Copy()
+		ctx.Set("user_agent", c.Request.UserAgent())
+		ctx.Set("client_ip", c.ClientIP())
+		r, err := t.authService.Login(ctx, &l)
 		if err != nil {
 			response.Fail(c, err.Error(), map[string]interface{}{})
 			return
@@ -91,9 +89,9 @@ func (t *AuthorityController) Register(c *gin.Context) {
 		response.BadRequest(c, "Bad Request:Invalid Parameters", map[string]interface{}{})
 		return
 	}
-	fmt.Println("l.Data.CaptchaId", l.Data.CaptchaId, "l.Data.CaptchaValue", l.Data.CaptchaValue)
+	// fmt.Println("l.Data.CaptchaId", l.Data.CaptchaId, "l.Data.CaptchaValue", l.Data.CaptchaValue)
 	verfied := store.Verify(l.Data.CaptchaId, l.Data.CaptchaValue, true)
-	fmt.Println("verfied", verfied)
+	// fmt.Println("verfied", verfied)
 	if verfied {
 		r, err := t.authService.Register(c, &l)
 		if err != nil {
