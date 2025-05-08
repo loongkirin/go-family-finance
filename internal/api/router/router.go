@@ -4,9 +4,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
+
 	"github.com/gin-gonic/gin"
 	"github.com/loongkirin/gdk/net/http/gin/middleware"
 	"github.com/loongkirin/gdk/telemetry"
+	"github.com/loongkirin/gdk/util"
 	"github.com/loongkirin/go-family-finance/internal/api/controller"
 	"github.com/loongkirin/go-family-finance/internal/app"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -18,29 +22,45 @@ type Router struct {
 }
 
 func NewRouter() *Router {
-	engine := gin.Default()
-	engine.Use(middleware.RequestId())
-	engine.Use(middleware.TraceId())
-	engine.Use(middleware.Recovery(app.AppContext.APP_LOGGER))
-	engine.Use(middleware.Logger(app.AppContext.APP_LOGGER))
-	engine.Use(middleware.Tracing(app.AppContext.APP_TRACER))
+	r := gin.New()
+
+	// gin.SetMode(gin.ReleaseMode)
+	// CORS middleware
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	// Gzip compression
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
+
+	r.Use(middleware.RequestId())
+	r.Use(middleware.TraceId())
+	r.Use(middleware.Recovery(app.AppContext.APP_LOGGER))
+	r.Use(middleware.Logger(app.AppContext.APP_LOGGER))
+	r.Use(middleware.Tracing(app.AppContext.APP_TRACER))
 	int64Meter := telemetry.NewDynamicMeter[int64](app.AppContext.APP_METRICS)
-	engine.Use(middleware.BlockRateLimiter(middleware.NewIPBlockRateLimiter(middleware.RateLimiterConfig{
+	r.Use(middleware.BlockRateLimiter(middleware.NewIPBlockRateLimiter(middleware.RateLimiterConfig{
 		Limit:   30,
 		Timeout: time.Second * 45,
 		Meter:   int64Meter,
 		Logger:  app.AppContext.APP_LOGGER,
 	})))
-	engine.Use(middleware.BreakRateLimiter(middleware.NewIPBreakRateLimiter(middleware.BreakRateLimiterConfig{
+	r.Use(middleware.BreakRateLimiter(middleware.NewIPBreakRateLimiter(middleware.BreakRateLimiterConfig{
 		Limit:  rate.Limit(30),
 		Burst:  45,
 		Meter:  int64Meter,
 		Logger: app.AppContext.APP_LOGGER,
 	})))
 	dynamicMeter := telemetry.NewDynamicMeter[float64](app.AppContext.APP_METRICS)
-	engine.Use(middleware.Retry(app.AppContext.APP_LOGGER, 3, time.Second*3))
-	engine.Use(middleware.Metrics(dynamicMeter))
-	return &Router{engine: engine}
+	r.Use(middleware.Retry(app.AppContext.APP_LOGGER, 3, time.Second*3))
+	r.Use(middleware.Metrics(dynamicMeter))
+	r.Use(middleware.Validator(util.MaxLenValidator, util.MinLenValidator, util.PasswordValidator))
+	return &Router{engine: r}
 }
 
 func (r *Router) InitRouter() {

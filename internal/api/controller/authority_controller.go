@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,7 @@ import (
 	"github.com/loongkirin/gdk/cache/redis"
 	"github.com/loongkirin/gdk/captcha"
 	"github.com/loongkirin/gdk/database/gorm/repository"
+	"github.com/loongkirin/gdk/net/http/gin/middleware"
 	"github.com/loongkirin/gdk/net/http/request"
 	"github.com/loongkirin/gdk/net/http/response"
 	"github.com/loongkirin/gdk/oauth"
@@ -20,6 +22,8 @@ var (
 	cpCache cache.CacheStore
 	store   base64Captcha.Store
 	cp      *captcha.Captcha
+
+	errCaptchaWrong = errors.New("验证码错误")
 )
 
 type AuthorityController struct {
@@ -67,40 +71,56 @@ func (t *AuthorityController) Login(c *gin.Context) {
 		return
 	}
 
-	if store.Verify(l.Data.CaptchaId, l.Data.CaptchaValue, true) {
-		ctx := c.Copy()
-		ctx.Set("user_agent", c.Request.UserAgent())
-		ctx.Set("client_ip", c.ClientIP())
-		r, err := t.authService.Login(ctx, &l)
+	if verfied, err := captcha.VerifyCaptcha(store, l.Data.Captcha.CaptchaId, l.Data.Captcha.CaptchaValue, true); err != nil || !verfied {
 		if err != nil {
 			response.Fail(c, err.Error(), map[string]interface{}{})
-			return
+		} else {
+			response.Fail(c, errCaptchaWrong.Error(), map[string]interface{}{})
 		}
-
-		response.Ok(c, "登录成功", r)
-	} else {
-		response.Fail(c, "验证码错误", map[string]interface{}{})
+		return
 	}
+
+	ctx := c.Copy()
+	ctx.Set("user_agent", c.Request.UserAgent())
+	ctx.Set("client_ip", c.ClientIP())
+	r, err := t.authService.Login(ctx, &l)
+	if err != nil {
+		response.Fail(c, err.Error(), map[string]interface{}{})
+		return
+	}
+
+	response.Ok(c, "登录成功", r)
+
 }
 
 func (t *AuthorityController) Register(c *gin.Context) {
 	var l request.DataRequest[auth.RegisterDTO]
-	if err := c.ShouldBindJSON(&l); err != nil {
-		response.BadRequest(c, "Bad Request:Invalid Parameters", map[string]interface{}{})
+
+	if err := middleware.ValidateRequest(c, &l); err != nil {
+		response.BadRequest(c, err.Error(), map[string]interface{}{})
 		return
 	}
-	// fmt.Println("l.Data.CaptchaId", l.Data.CaptchaId, "l.Data.CaptchaValue", l.Data.CaptchaValue)
-	verfied := store.Verify(l.Data.CaptchaId, l.Data.CaptchaValue, true)
-	// fmt.Println("verfied", verfied)
-	if verfied {
-		r, err := t.authService.Register(c, &l)
+
+	// if err := c.ShouldBindJSON(&l); err != nil {
+	// 	fmt.Println("2-1", err.Error())
+	// 	response.BadRequest(c, "Bad Request:Invalid Parameters", map[string]interface{}{})
+	// 	return
+	// }
+
+	if verfied, err := captcha.VerifyCaptcha(store, l.Data.Captcha.CaptchaId, l.Data.Captcha.CaptchaValue, true); err != nil || !verfied {
 		if err != nil {
 			response.Fail(c, err.Error(), map[string]interface{}{})
-			return
+		} else {
+			response.Fail(c, errCaptchaWrong.Error(), map[string]interface{}{})
 		}
-
-		response.Ok(c, "注册成功", r)
-	} else {
-		response.Fail(c, "验证码错误", map[string]interface{}{})
+		return
 	}
+
+	r, err := t.authService.Register(c, &l)
+	if err != nil {
+		response.Fail(c, err.Error(), map[string]interface{}{})
+		return
+	}
+
+	response.Ok(c, "注册成功", r)
 }

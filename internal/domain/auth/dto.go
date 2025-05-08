@@ -53,17 +53,17 @@ type UpdateUserDTO struct {
 }
 
 type LoginDTO struct {
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	CaptchaDTO
+	Phone    string     `json:"phone"`
+	Email    string     `json:"email"`
+	Password string     `json:"password"`
+	Captcha  CaptchaDTO `json:"captcha"`
 }
 
 type RegisterDTO struct {
-	Phone      string `json:"phone"`
-	Email      string `json:"email"`
-	UserName   string `json:"user_name"`
-	TenantName string `json:"tenant_name"`
-	Password   string `json:"password"`
-	CaptchaDTO
+	Phone      string     `json:"phone" binding:"required"`
+	Email      string     `json:"email" binding:"required,email"`
+	UserName   string     `json:"user_name" binding:"required,min_len=3"`
+	TenantName string     `json:"tenant_name" binding:"required,min_len=3,max_len=50"`
+	Password   string     `json:"password" binding:"required,password=number&letter&special,min_len=8"`
+	Captcha    CaptchaDTO `json:"captcha"`
 }
